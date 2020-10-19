@@ -24,11 +24,10 @@ public class DepartementServiceImplTest {
 	@Autowired 
 	IDepartementService ds; 
 
-
-
 	@Test
 	public void testRetrieveAllDepartment() {
 		List<Departement> listDepartment = ds.getAllDepartements(); 
+		
 		// if there are 5 users in DB : 
 		assertEquals(5, listDepartment.size());
 	}

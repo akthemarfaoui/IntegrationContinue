@@ -15,20 +15,18 @@ import tn.esprit.spring.entities.Entreprise;
 @Repository
 public interface EmployeRepository extends CrudRepository<Employe, Integer>  {
 	
-	@Query("SELECT e FROM User e WHERE e.email=:email and e.password=:password")
+	@Query("SELECT e FROM Employe e WHERE e.email=:email and e.password=:password")
 	public Employe getEmployeByEmailAndPassword(@Param("email")String login, @Param("password")String password);
 	
 	
-	
-	
-	@Query("SELECT count(*) FROM User")
+	@Query("SELECT count(*) FROM Employe")
     public int countemp();
 	
-    @Query("SELECT nom FROM User")
+    @Query("SELECT nom FROM Employe")
     public List<String> employeNames();
     
     @Query("Select "
-			+ "DISTINCT emp from User emp "
+			+ "DISTINCT emp from Employe emp "
 			+ "join emp.departements dps "
 			+ "join dps.entreprise entrep "
 			+ "where entrep=:entreprise")
@@ -36,7 +34,7 @@ public interface EmployeRepository extends CrudRepository<Employe, Integer>  {
     
     @Modifying
     @Transactional
-    @Query("UPDATE User e SET e.email=:email1 where e.id=:employeId")
+    @Query("UPDATE Employe e SET e.email=:email1 where e.id=:employeId")
     public void mettreAjourEmailByEmployeIdJPQL(@Param("email1")String email, @Param("employeId")int employeId);
 
     
