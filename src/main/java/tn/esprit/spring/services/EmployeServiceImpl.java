@@ -3,6 +3,7 @@ package tn.esprit.spring.services;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,9 +49,14 @@ public class EmployeServiceImpl implements IEmployeService {
 
 
 	public void mettreAjourEmailByEmployeId(String email, int employeId) {
-		Employe employe = employeRepository.findById(employeId).get();
-		employe.setEmail(email);
-		employeRepository.save(employe);
+
+		Optional<Employe> employe = employeRepository.findById(employeId);
+		if(employe.isPresent())
+		{
+			employe.get().setEmail(email);
+			employeRepository.save(employe.get());
+		}
+
 
 	}
 
@@ -76,8 +82,10 @@ public class EmployeServiceImpl implements IEmployeService {
 	@Transactional
 	public void desaffecterEmployeDuDepartement(int employeId, int depId)
 	{
+		
 		Departement dep = deptRepoistory.findById(depId).get();
 
+		
 		int employeNb = dep.getEmployes().size();
 		for(int index = 0; index < employeNb; index++){
 			if(dep.getEmployes().get(index).getId() == employeId){
@@ -110,16 +118,21 @@ public class EmployeServiceImpl implements IEmployeService {
 	 
 	public void deleteEmployeById(int employeId)
 	{
-		Employe employe = employeRepository.findById(employeId).get();
+		
+		Optional<Employe> employe = employeRepository.findById(employeId);
 
+		if(employe.isPresent()){
+			
+			for(Departement dep : employe.get().getDepartements()){
+				dep.getEmployes().remove(employe.get());
+			}
+		
+			employeRepository.delete(employe.get());
+		}
 		//Desaffecter l'employe de tous les departements
 		//c'est le bout master qui permet de mettre a jour
 		//la table d'association
-		for(Departement dep : employe.getDepartements()){
-			dep.getEmployes().remove(employe);
-		}
 
-		employeRepository.delete(employe);
 	}
 
 	public void deleteContratById(int contratId) {
