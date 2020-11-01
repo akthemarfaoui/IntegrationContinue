@@ -21,7 +21,7 @@ import tn.esprit.spring.services.IDepartementService;
 public class ContratServiceImplTest {
 	
 	
-	/* ******************** JUNIT TEST CLASS AKTHEM ARFAOUI ***************************  */
+	/* ******************** JUNIT TEST CLASS HAMZA HADJ TAIEB ***************************  */
 
 	@Autowired 
 	IContratService cs; 
