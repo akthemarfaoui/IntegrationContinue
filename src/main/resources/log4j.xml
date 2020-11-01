@@ -19,6 +19,7 @@
 
 	<!-- Confighuration de l'affichage dns le fichier de logs -->
 	<!-- append=false: pour écraser les anciens logs près chaque redémarrage -->
+	
 	<appender name="file" class="org.apache.log4j.RollingFileAppender">
 		<param name="append" value="true" />
 		<param name="maxFileSize" value="2KB" />
