@@ -6,6 +6,8 @@ import java.util.List;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -34,6 +36,18 @@ public class ContratServiceImplTest {
 		assertEquals(2, listContrat.size());
 	}
 
+	@Test 
+	public void TestRetrieveContratByReference(){
+		Contrat contrat = cs.getContratById(1);
+		assertNull(contrat);
+	}
+	
+	@Test 
+	public void TestFindContratByEmploye(){
+		Contrat contrat = cs.getContratByEmployeId(0);
+		assertNull(contrat);
+	}
+	
 	
 
 }

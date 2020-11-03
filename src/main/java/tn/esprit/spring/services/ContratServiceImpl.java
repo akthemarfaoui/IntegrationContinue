@@ -18,6 +18,7 @@ public class ContratServiceImpl implements IContratService {
 
 
 	public List<Contrat> getAllContrats() {
+		l.info("In getAllContrats() ");
 		List<Contrat> list = (List<Contrat>) contratRepository.listContrats();
 		return list;
 	}
