@@ -29,7 +29,7 @@ public class DepartementServiceImplTest {
 	public void testRetrieveAllDepartment() {
 		List<Departement> listDepartment = ds.getAllDepartements(); 
 		
-		// if there are 5 users in DB : 
+		// we will test if there are 5 Departments in our database : 
 		assertEquals(5, listDepartment.size());
 	}
 
