@@ -22,6 +22,7 @@ public class DepartementServiceImpl implements IDepartementService {
 
 	public List<Departement> getAllDepartements() {
 		l.info("On Va afficher la liste des departements  ");
+		l.debug(" Debug retour liste departements  ");
 		return (List<Departement>) deptRepoistory.findAll();
 	}
 
