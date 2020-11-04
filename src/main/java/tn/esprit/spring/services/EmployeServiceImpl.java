@@ -5,6 +5,7 @@ import java.util.ArrayList;
 
 import java.util.Date;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import org.apache.log4j.Logger;
@@ -44,7 +45,12 @@ public class EmployeServiceImpl implements IEmployeService {
 
 	@Override
 	public int addOrUpdateEmploye(Employe employe) {
+		
+		l.info("In addOrUpdateEmploye method");
+
 		employeRepository.save(employe);
+		l.info("Out addOrUpdateEmploye method");
+
 		return employe.getId();
 	}
 
@@ -56,6 +62,11 @@ public class EmployeServiceImpl implements IEmployeService {
 		{
 			employe.get().setEmail(email);
 			employeRepository.save(employe.get());
+		}else {
+			
+			l.error("Employe with id "+employeId+" is not found");
+			throw new NoSuchElementException();
+
 		}
 
 
@@ -63,63 +74,147 @@ public class EmployeServiceImpl implements IEmployeService {
 
 	@Transactional	
 	public void affecterEmployeADepartement(int employeId, int depId) {
-		Departement depManagedEntity = deptRepoistory.findById(depId).get();
-		Employe employeManagedEntity = employeRepository.findById(employeId).get();
+	
+		l.info("In affecterEmployeADepartement method");
 
-		if(depManagedEntity.getEmployes() == null){
+		Optional<Employe> employeManagedEntity = employeRepository.findById(employeId);
+		Optional<Departement> depManagedEntity = deptRepoistory.findById(depId);
 
-			List<Employe> employes = new ArrayList<>();
-			employes.add(employeManagedEntity);
-			depManagedEntity.setEmployes(employes);
+		if(depManagedEntity.isPresent())
+		{
+
+			l.info("departement found In affecterEmployeADepartement method");
+
+			if(employeManagedEntity.isPresent())
+			{
+				l.info("employe found In affecterEmployeADepartement method");
+				
+				if(depManagedEntity.get().getEmployes() == null){
+
+					List<Employe> employes = new ArrayList<>();
+					employes.add(employeManagedEntity.get());
+					depManagedEntity.get().setEmployes(employes);
+				}else{
+
+					depManagedEntity.get().getEmployes().add(employeManagedEntity.get());
+				}
+				
+				l.info("departement is saving...");
+
+				deptRepoistory.save(depManagedEntity.get()); 
+				
+				l.info("departement is saved");
+
+			}else{
+			
+				l.error("employe id not found");
+				throw new NoSuchElementException();
+
+			}
+			
 		}else{
-
-			depManagedEntity.getEmployes().add(employeManagedEntity);
+			
+			l.error("departement id not found");
+			throw new NoSuchElementException();
 		}
+		
 
-		// à ajouter? 
-		deptRepoistory.save(depManagedEntity); 
+		l.info("Out affecterEmployeADepartement method");
 
 	}
+	
 	@Transactional
 	public void desaffecterEmployeDuDepartement(int employeId, int depId)
 	{
-		
-		Departement dep = deptRepoistory.findById(depId).get();
+		l.info("In desaffecterEmployeDuDepartement method");
 
-		
-		int employeNb = dep.getEmployes().size();
-		for(int index = 0; index < employeNb; index++){
-			if(dep.getEmployes().get(index).getId() == employeId){
-				dep.getEmployes().remove(index);
-				break;//a revoir
+		Optional<Departement> dep =deptRepoistory.findById(depId);
+
+		if(dep.isPresent())
+		{
+			int employeNb = dep.get().getEmployes().size();
+			for(int index = 0; index < employeNb; index++){
+				if(dep.get().getEmployes().get(index).getId() == employeId){
+					dep.get().getEmployes().remove(index);
+					break;//a revoir
+				}
 			}
+		}else{
+			
+			l.error("Departement not found in desaffecterEmployeDuDepartement");
+			throw new NoSuchElementException();
 		}
+		
+
+		l.info("Out desaffecterEmployeDuDepartement method");
+
 	} 
 	
 	// Tablesapce (espace disque) 
 
 	public int ajouterContrat(Contrat contrat) {
+		l.info("In ajouterContrat method");
+
 		contratRepoistory.save(contrat);
+		
+		l.info("Out ajouterContrat method");
+
 		return contrat.getReference();
 	}
 
 	public void affecterContratAEmploye(int contratId, int employeId) {
-		Contrat contratManagedEntity = contratRepoistory.findById(contratId).get();
-		Employe employeManagedEntity = employeRepository.findById(employeId).get();
+		
+		l.info("In affecterContratAEmploye method");
 
-		contratManagedEntity.setEmploye(employeManagedEntity);
-		contratRepoistory.save(contratManagedEntity);
+		Optional<Contrat> contratManagedEntity =contratRepoistory.findById(contratId);
+		Optional<Employe> employeManagedEntity =employeRepository.findById(employeId);
+
+		if(contratManagedEntity.isPresent())
+		{
+			if(employeManagedEntity.isPresent())
+			{
+				contratManagedEntity.get().setEmploye(employeManagedEntity.get());
+				contratRepoistory.save(contratManagedEntity.get());
+			}else{
+				
+				l.error("Employe not found in affecterContratAEmploye");
+				throw new NoSuchElementException();
+				
+			}
+		}else{
+
+			l.error("contrat not found in affecterContratAEmploye");
+			throw new NoSuchElementException();
+		
+		}
+		
+		l.info("Out affecterContratAEmploye method");
 
 	}
 
 	public String getEmployePrenomById(int employeId) {
-		Employe employeManagedEntity = employeRepository.findById(employeId).get();
-		return employeManagedEntity.getPrenom();
+
+		l.info("In getEmployePrenomById method");
+
+		Optional<Employe> employeManagedEntity =employeRepository.findById(employeId);
+		
+		if(employeManagedEntity.isPresent())
+		{
+
+			return employeManagedEntity.get().getPrenom();
+			
+		}else{
+			l.error("Employe not found in getEmployePrenomById method");
+
+			return "";	
+		}
 	}
 	 
 	public void deleteEmployeById(int employeId)
 	{
 		
+		l.info("In deleteEmployeById method");
+
 		Optional<Employe> employe = employeRepository.findById(employeId);
 
 		if(employe.isPresent()){
@@ -129,17 +224,38 @@ public class EmployeServiceImpl implements IEmployeService {
 			}
 		
 			employeRepository.delete(employe.get());
+		}else{
+
+			l.error("Employe with id "+employeId+" is not found in method deleteEmployeById");
+			throw new NoSuchElementException();
+			
 		}
 		//Desaffecter l'employe de tous les departements
 		//c'est le bout master qui permet de mettre a jour
 		//la table d'association
 
+		l.info("Out deleteEmployeById method");
+
 	}
 
 	public void deleteContratById(int contratId) {
-		Contrat contratManagedEntity = contratRepoistory.findById(contratId).get();
-		contratRepoistory.delete(contratManagedEntity);
+		l.info("In deleteContratById method");
+		
+		Optional<Contrat> contratManagedEntity = contratRepoistory.findById(contratId);
+		if(contratManagedEntity.isPresent())
+		{
+		
+			contratRepoistory.delete(contratManagedEntity.get());		
+		
+		}else{
+			
+			l.error("contrat is not found");
+			throw new NoSuchElementException();
+			
+		}
 
+		l.info("Out deleteContratById method");
+		
 	}
 
 	public int getNombreEmployeJPQL() {
@@ -177,6 +293,8 @@ public class EmployeServiceImpl implements IEmployeService {
 	}
 
 	public List<Employe> getAllEmployes() {
+		l.info("In getAllEmployes method");
+		
 		return (List<Employe>) employeRepository.findAll();
 	}
 
